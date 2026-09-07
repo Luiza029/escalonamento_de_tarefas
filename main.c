@@ -68,5 +68,51 @@ int main(int argc, char const *argv[]){
         cont++;
     }
 
+    int criterio_atual, criterio_melhor, idle = 0;
+
+    for(int t=0; t<tempoTotal; t++){
+        for(int i=0; i<cont; i++){
+            if(t % tarefas[i].periodo == 0){
+                tarefas[i].tempo_restante = tarefas[i].burst;
+                tarefas[i].instante_chegada = t;
+            }
+
+            if(tarefas[i].instante_chegada + tarefas[i].deadline == t && tarefas[i].tempo_restante > 0){
+                tarefas[i].tempo_restante = 0;
+                tarefas[i].contador_lost++;
+            }
+        }
+
+        int indice_escolhido = -1;
+
+        for(int i=0; i<cont; i++){
+            if(tarefas[i].tempo_restante > 0){
+                if(strcmp(algoritimo, "rate") == 0){
+                    criterio_atual = tarefas[i].periodo;
+                    
+                    criterio_melhor = (indice_escolhido != -1) ? tarefas[indice_escolhido].periodo : NULL;
+                }
+
+                else{
+                    criterio_atual = tarefas[i].instante_chegada + tarefas[i].deadline;
+                    
+                    criterio_melhor = (indice_escolhido != -1) ? tarefas[indice_escolhido].instante_chegada + tarefas[indice_escolhido].deadline : NULL;
+                }
+
+                if(indice_escolhido == -1 || criterio_atual < criterio_melhor) indice_escolhido = i;
+            }
+        }
+
+        if(indice_escolhido != -1){
+            tarefas[indice_escolhido].tempo_restante -= 1;
+
+            if(tarefas[indice_escolhido].tempo_restante == 0)tarefas[indice_escolhido].contador_complete += 1;
+        }
+
+        else{
+            idle++;
+        }
+    }
+
     return 0;
 }
