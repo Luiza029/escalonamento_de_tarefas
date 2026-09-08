@@ -217,3 +217,67 @@ gcc main.o -o scheduler
 [?2004lexit
 
 Script done on 2026-09-07 22:17:58-03:00 [COMMAND_EXIT_CODE="1"]
+Script started on 2026-09-08 11:41:42-03:00 [TERM="xterm-256color" TTY="/dev/pts/4" COLUMNS="227" LINES="21"]
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ whoami
+[?2004lcwlui
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ pwd
+[?2004l/mnt/c/Users/cwlui/facul/lcw
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make
+[?2004lgcc -c main.c
+gcc main.o -o scheduler
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make[1Ppwdwhoamigit pushcommit -m "implementacao do dia 07/09"add .[K./scheduler rate voo.txtscript -a evidencias.log./scheduler rate voo.txt
+[?2004l100
+20
+12
+8
+50
+30
+15
+0
+197
+0
+Erro: parametros inconsistente
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make
+[?2004lgcc -c main.c
+gcc main.o -o scheduler
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make./scheduler rate voo.txt
+[?2004l100
+20
+12
+8
+50
+30
+15
+0
+197
+0
+Erro: parametros inconsistente
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make
+[?2004lgcc -c main.c
+gcc main.o -o scheduler
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make./scheduler rate voo.txt
+[?2004l100
+Erro: arquivo de entrada mal formado
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make
+[?2004lgcc -c main.c
+gcc main.o -o scheduler
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make./scheduler rate voo.txt
+[?2004l100
+20
+12
+8
+50
+30
+15
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make
+[?2004lmake: 'scheduler' is up to date.
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make./scheduler rate voo.txt
+[?2004l100
+Erro: arquivo de entrada mal formado
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ make
+[?2004lgcc -c main.c
+gcc main.o -o scheduler
+[?2004h]0;cwlui@Luiza: /mnt/c/Users/cwlui/facul/lcw[01;32mcwlui@Luiza[00m:[01;34m/mnt/c/Users/cwlui/facul/lcw[00m$ exit
+[?2004lexit
+
+Script done on 2026-09-08 14:11:20-03:00 [COMMAND_EXIT_CODE="0"]
