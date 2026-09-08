@@ -8,7 +8,7 @@ typedef struct Tarefas{
     int periodo;
     int deadline;
     int burst;
-    int tempo_restante;
+    int burst_restante;
     int instante_chegada;
     int contador_lost;
     int contador_complete;
@@ -24,7 +24,7 @@ int main(int argc, char const *argv[]){
         exit(1);
     }
 
-    char *algoritimo;
+    const char *algoritimo;
 
     algoritimo = argv[1];
 
@@ -33,24 +33,26 @@ int main(int argc, char const *argv[]){
         exit(1);
     }
 
-    FILE *arq = fopen(argv[2], "w");
+    FILE *arq = fopen("voo.txt", "r");
     if(arq == NULL){
         fprintf(stderr, "Erro: Nao foi possivel abiri o arquivo\n");
         exit(1);
     }
+    
+    int tempoTotal;
+    int itens_lidos = fscanf(arq, "%d", &tempoTotal);
 
-    int tempoTotal = fscanf(arq, "%d", &tempoTotal);
-
-    if(tempoTotal < 0){
+    if(itens_lidos != 1 || tempoTotal <= 0){
         fprintf(stderr, "Erro: Tempo Invalido\n");
         exit(1);
     }
+    printf("%d\n", tempoTotal);
 
     int cont = 0;
     while(fscanf(arq, "%s %d %d %d", tarefas[cont].nome, &tarefas[cont].periodo, &tarefas[cont].deadline, &tarefas[cont].burst)){
         
         if(! feof(arq)){
-            fprintf(stderr, "Erro: arquivo de entrada malformado\n");
+            fprintf(stderr, "Erro: arquivo de entrada mal formado\n");
             exit(1);
         }
         
@@ -59,7 +61,7 @@ int main(int argc, char const *argv[]){
             exit(1);
         }
 
-        tarefas[cont].tempo_restante = 0;
+        tarefas[cont].burst_restante = 0;
         tarefas[cont].instante_chegada = 0;
         tarefas[cont].contador_lost = 0;
         tarefas[cont].contador_complete = 0;
@@ -68,35 +70,47 @@ int main(int argc, char const *argv[]){
         cont++;
     }
 
-    int criterio_atual, criterio_melhor, idle = 0;
+    int criterio_atual, criterio_melhor, idle = 0, units = 0;
+
+    FILE *arqRate = fopen("rate_lcw.out", "w");
+    if(arqRate == NULL){
+        fprintf(stderr, "Erro: Nao foi possivel abiri o arquivo\n");
+        exit(1);
+    }
+        
+    FILE *arqEdf = fopen("edf_lcw.out", "w");
+    if(arqEdf == NULL){
+        fprintf(stderr, "Erro: Nao foi possivel abiri o arquivo\n");
+        exit(1);
+    }
 
     for(int t=0; t<tempoTotal; t++){
         for(int i=0; i<cont; i++){
             if(t % tarefas[i].periodo == 0){
-                tarefas[i].tempo_restante = tarefas[i].burst;
+                tarefas[i].burst_restante = tarefas[i].burst;
                 tarefas[i].instante_chegada = t;
             }
 
-            if(tarefas[i].instante_chegada + tarefas[i].deadline == t && tarefas[i].tempo_restante > 0){
-                tarefas[i].tempo_restante = 0;
+            if(tarefas[i].instante_chegada + tarefas[i].deadline == t && tarefas[i].burst_restante > 0){
+                tarefas[i].burst_restante = 0;
                 tarefas[i].contador_lost++;
             }
         }
 
         int indice_escolhido = -1;
-
+        
         for(int i=0; i<cont; i++){
-            if(tarefas[i].tempo_restante > 0){
+            if(tarefas[i].burst_restante > 0){
                 if(strcmp(algoritimo, "rate") == 0){
                     criterio_atual = tarefas[i].periodo;
                     
-                    criterio_melhor = (indice_escolhido != -1) ? tarefas[indice_escolhido].periodo : NULL;
+                    criterio_melhor = (indice_escolhido != -1) ? tarefas[indice_escolhido].periodo : 9999;
                 }
 
                 else{
                     criterio_atual = tarefas[i].instante_chegada + tarefas[i].deadline;
                     
-                    criterio_melhor = (indice_escolhido != -1) ? tarefas[indice_escolhido].instante_chegada + tarefas[indice_escolhido].deadline : NULL;
+                    criterio_melhor = (indice_escolhido != -1) ? tarefas[indice_escolhido].instante_chegada + tarefas[indice_escolhido].deadline : 9999;
                 }
 
                 if(indice_escolhido == -1 || criterio_atual < criterio_melhor) indice_escolhido = i;
@@ -104,14 +118,38 @@ int main(int argc, char const *argv[]){
         }
 
         if(indice_escolhido != -1){
-            tarefas[indice_escolhido].tempo_restante -= 1;
+            tarefas[indice_escolhido].burst_restante -= 1;
 
-            if(tarefas[indice_escolhido].tempo_restante == 0)tarefas[indice_escolhido].contador_complete += 1;
+            if(tarefas[indice_escolhido].burst_restante == 0)tarefas[indice_escolhido].contador_complete += 1;
         }
 
         else{
             idle++;
         }
+        
+        for(int i=0; i<cont; i++){
+            if(tarefas[i].burst_restante > 0){
+                tarefas[i].contador_killed++;
+            }
+        }
+        
+        char *tarefaAntiga = tarefas[-1].nome;
+        if(strcmp(tarefaAntiga, tarefas[t].nome) == 0){
+            units++;
+        } 
+
+        else{
+            if(strcmp(algoritimo, "rate") == 0){
+                fprintf(arqRate, "[%s] for %d units - ", tarefas[t].nome, units);
+                units = 0;  
+            }
+
+            else if(strcmp(algoritimo, "edf") == 0){
+                fprintf(arqEdf, "[%s] for %d units - ", tarefas[t].nome, units);
+                units = 0;  
+            }
+        }
+
     }
 
     return 0;
