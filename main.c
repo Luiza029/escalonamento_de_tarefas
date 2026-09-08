@@ -47,7 +47,7 @@ int main(int argc, char const *argv[]){
         exit(1);
     }
 
-    int cont = 1;
+    int cont = 0;
     while(fscanf(arq, "%s %d %d %d", tarefas[cont].nome, &tarefas[cont].periodo, &tarefas[cont].deadline, &tarefas[cont].burst) == 4){
         
         if(tarefas[cont].burst > tarefas[cont].deadline || tarefas[cont].deadline > tarefas[cont].periodo){
@@ -91,7 +91,8 @@ int main(int argc, char const *argv[]){
         fprintf(arqEdf, "EXECUTION BY EDF\n");  
     }
     
-    int indice_anterior = -1;
+    int indice_anterior = -2;
+    char tipo;
     
     for(int t=0; t<tempoTotal; t++){
         for(int i=0; i<cont; i++){
@@ -134,34 +135,113 @@ int main(int argc, char const *argv[]){
 
         else{
             idle++;
-        }
-        
-        for(int i=0; i<cont; i++){
-            if(tarefas[i].burst_restante > 0){
-                tarefas[i].contador_killed++;
-            }
-        }
-
-        if(indice_anterior == indice_escolhido){
-            units++;
         } 
 
-        else{
-            if(indice_anterior != -1){
+         if(indice_anterior == indice_escolhido){
+            units++;
+        }
 
-                if(strcmp(algoritimo, "rate") == 0){
-                    fprintf(arqRate, "[%s] for %d units - \n", tarefas[indice_anterior].nome, units);
+        else{
+            if(indice_anterior != -2){
+                if(indice_anterior == -1){
+                    if(strcmp(algoritimo, "rate") == 0){
+                        fprintf(arqRate, "idle for %d units\n", units);
+                    }
+                    
+                    else if(strcmp(algoritimo, "edf") == 0){
+                        fprintf(arqEdf, "idle for %d units\n", units);  
+                    }
                 }
-                
-                else if(strcmp(algoritimo, "edf") == 0){
-                    fprintf(arqEdf, "[%s] for %d units - \n", tarefas[indice_anterior].nome, units);  
+
+                else{   
+                    if(strcmp(algoritimo, "rate") == 0){
+                        if(t == tarefas[indice_anterior].instante_chegada + tarefas[indice_anterior].deadline){
+                            tipo = 'L';
+                        }
+
+                        else if(tarefas[indice_anterior].burst_restante == 0){
+                            tipo = 'F';
+                        }
+
+                        else{
+                            tipo = 'H';
+                        }
+
+                        fprintf(arqRate, "[%s] for %d units - %c\n", tarefas[indice_anterior].nome, units, tipo);
+                    }
+                    
+                    else if(strcmp(algoritimo, "edf") == 0){
+                        if(t == tarefas[indice_anterior].instante_chegada + tarefas[indice_anterior].deadline){
+                            tipo = 'L';
+                        }
+
+                        else if(tarefas[indice_anterior].burst_restante == 0){
+                            tipo = 'F';
+                        }
+
+                        else{
+                            tipo = 'H';
+                        }
+
+                        fprintf(arqEdf, "[%s] for %d units - %c\n", tarefas[indice_anterior].nome, units, tipo);  
+                    }
                 }
             }
                 
-            units = 0;  
+            units = 1;  
         }
 
         indice_anterior = indice_escolhido;
+    }
+
+    if(indice_anterior == -1){
+        if(strcmp(algoritimo, "rate") == 0){
+            fprintf(arqRate, "idle for %d units\n", units);
+        }
+        
+        else if(strcmp(algoritimo, "edf") == 0){
+            fprintf(arqEdf, "idle for %d units\n", units);  
+        }
+    }
+
+    for(int i=0; i<cont; i++){
+        if(tarefas[i].burst_restante > 0){
+            tarefas[i].contador_killed++;
+        }
+    }
+
+    if(strcmp(algoritimo, "rate") == 0){
+        fprintf(arqRate, "\nLOST DEADLINES\n");
+        for(int i=0; i<cont; i++){
+            fprintf(arqRate, "[%s] %d\n", tarefas[i].nome, tarefas[i].contador_lost); 
+        }
+
+        fprintf(arqRate, "\nCOMPLETE EXECUTION\n");
+        for(int i=0; i<cont; i++){
+            fprintf(arqRate, "[%s] %d\n", tarefas[i].nome, tarefas[i].contador_complete);
+        }
+
+        fprintf(arqRate, "\nKILLED\n");
+        for(int i=0; i<cont; i++){
+            fprintf(arqRate, "[%s] %d\n", tarefas[i].nome, tarefas[i].contador_killed);
+        }
+    }
+        
+    else if(strcmp(algoritimo, "edf") == 0){
+        fprintf(arqEdf, "\nLOST DEADLINES\n");
+        for(int i=0; i<cont; i++){
+            fprintf(arqEdf, "[%s] %d\n", tarefas[i].nome, tarefas[i].contador_lost); 
+        }
+
+        fprintf(arqEdf, "\nCOMPLETE EXECUTION\n");
+        for(int i=0; i<cont; i++){
+            fprintf(arqEdf, "[%s] %d\n", tarefas[i].nome, tarefas[i].contador_complete);
+        }
+
+        fprintf(arqEdf, "\nKILLED\n");
+        for(int i=0; i<cont; i++){
+            fprintf(arqEdf, "[%s] %d\n", tarefas[i].nome, tarefas[i].contador_killed);
+        }
     }
 
     fclose(arqEdf);
